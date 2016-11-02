@@ -56,5 +56,10 @@ public class Background {
 		}
 	}
 
+	public long getCounter() {
+		return mCounter;
+	}
+
+	
 
 }
