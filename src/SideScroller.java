@@ -23,6 +23,8 @@ public class SideScroller extends GameFrame {
 	private static final int ANIM_LEFT = 1;
 	private static final int ANIM_UP = 2;
 	private static final int ANIM_RIGHT = 3;
+	private static final int SCREEN_WIDTH = 800;
+	private static final int SCREEN_HEIGHT = 600;
 	
 	private int mJumpDuration;
 	
@@ -30,6 +32,8 @@ public class SideScroller extends GameFrame {
 	private SpriteSheet mSpriteSheet;
 	private Sprite mSprite;
 	private AffineTransform mTransform;
+	private Background mBackground;
+	private boolean mMiddle = false;
 	
 	private Rectangle rect=new Rectangle(0, getWidth()-40, 100, 40);
 
@@ -37,6 +41,7 @@ public class SideScroller extends GameFrame {
 	public SideScroller(String title, int sizeX, int sizeY) {
 		super(title, sizeX, sizeY);
 		setUpdateRate(60);
+		mBackground = new Background();
 		mTransform = new AffineTransform();
 		mSpriteSheet=new SpriteSheet("sheet.png", 10, 4);
 		mSprite = new Sprite(mSpriteSheet,0,getHeight()-mSpriteSheet.getFrameHeight());
@@ -60,6 +65,7 @@ public class SideScroller extends GameFrame {
 	public void render(Graphics2D g, int sw, int sh) {
 		g.setBackground(Color.white);
 		g.clearRect(0, 0, sw, sh);
+		mBackground.draw(g);
 		mSprite.draw(g);
 		g.setColor(Color.orange);
 		g.draw(rect);
@@ -96,11 +102,17 @@ public class SideScroller extends GameFrame {
 			mSprite.move(PLAYER_SPEED, 0);
 			mSprite.setAnimation(ANIM_RIGHT);
 			mSprite.play();
+			if (mSprite.getX() == SCREEN_WIDTH/2)
+				mMiddle = true;
+			else
+				mMiddle = false;
+			mBackground.update(1, mMiddle);
 		}
 		else if (mPressedKeys.contains(KeyEvent.VK_LEFT)){
 			mSprite.move(-PLAYER_SPEED, 0);
 			mSprite.setAnimation(ANIM_LEFT);
 			mSprite.play();
+			mBackground.update(0, mMiddle);
 		}
 		
 		mSprite.update();
