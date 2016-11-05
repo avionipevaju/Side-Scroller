@@ -23,11 +23,9 @@ public class Game extends GameState  {
 	private static final double GRAVITY = 7.0;
 	private static final int JUMP_FACTOR = -20;
 	private static final int JUMP_LIMIT = 12;
-	// private static final int ANIM_LEFT = 1;
 	private static final int ANIM_IDLE = 0;
 	private static final int ANIM_LEFT = 1;
 	private static final int ANIM_RIGHT = 2;
-	// private static final int ANIM_RIGHT = 3;
 	private static final int SCREEN_WIDTH = 800;
 	private static final int SCREEN_HEIGHT = 600;
 
@@ -37,12 +35,13 @@ public class Game extends GameState  {
 
 	private final Set<Integer> mPressedKeys;
 	private SpriteSheet mSpriteSheet, mAltSheet, mCoinSheet;
-	private Sprite mMainCharacter, mCoin;
+	private Sprite mMainCharacter;
+	private Powerup mCoin;
 	private Background mBackground;
 	private boolean mMiddle = false, mBack = false;
 
 	private ArrayList<Obstacle> mObastcles;
-	private ArrayList<Sprite> mPowerups;
+	private ArrayList<Entity> mItems;
 	
 
 	public Game(GameHost host) {
@@ -53,7 +52,7 @@ public class Game extends GameState  {
 		
 		mBackground = new Background();
 		mPressedKeys = new HashSet<Integer>();
-		mDefaultBound = host.getHeight() - mMainCharacter.getSpriteSheet().getFrameHeight();
+		mDefaultBound = SCREEN_HEIGHT - mMainCharacter.getSpriteSheet().getFrameHeight();
 		mLowerBound = mDefaultBound;
 	}
 
@@ -104,7 +103,7 @@ public class Game extends GameState  {
 		mSpriteSheet = new SpriteSheet("jerry_sheet2.png", 4, 3);
 		mAltSheet = new SpriteSheet("badass_sheet.png", 4, 3);
 
-		mMainCharacter = new Sprite(mSpriteSheet, 0, host.getHeight() - mSpriteSheet.getFrameHeight());
+		mMainCharacter = new Sprite(mSpriteSheet, 0, SCREEN_HEIGHT - mSpriteSheet.getFrameHeight());
 
 		mMainCharacter.setAnimation(ANIM_IDLE);
 
@@ -113,14 +112,14 @@ public class Game extends GameState  {
 
 	public void generatePowerups() {
 		
-		mPowerups=new ArrayList<>();
+		mItems=new ArrayList<>();
 
 		mCoinSheet = new SpriteSheet("coin.png", 8, 2);
-		mCoin = new Sprite(mCoinSheet, 500, host.getHeight() - mCoinSheet.getFrameHeight());
+		mCoin = new Powerup(mCoinSheet, 500, SCREEN_HEIGHT - mCoinSheet.getFrameHeight());
 		mCoin.setAnimation(ANIM_IDLE);
 		mCoin.play();
 		
-		mPowerups.add(mCoin);
+		mItems.add(mCoin);
 	}
 
 	@Override
@@ -140,7 +139,7 @@ public class Game extends GameState  {
 
 		mMainCharacter.draw(g);
 		
-		for (Sprite powerup : mPowerups) {
+		for (Entity powerup : mItems) {
 			powerup.draw(g);
 		}
 
@@ -149,9 +148,9 @@ public class Game extends GameState  {
 	@Override
 	public void update() {
 
-		Sprite temp=null;
+		Entity temp=null;
 		
-		for(Sprite powerup:mPowerups){
+		for(Entity powerup:mItems){
 			if (mMainCharacter.getRect().intersects(powerup.getRect())) {
 				mMainCharacter.setSpriteSheet(mAltSheet);
 				temp=powerup;
@@ -159,14 +158,14 @@ public class Game extends GameState  {
 			}
 		}
 		if(temp!=null)
-			mPowerups.remove(temp);
+			mItems.remove(temp);
 			
 		
 
 		for (Obstacle x : mObastcles) {
 
 			if (mMainCharacter.getBottomLine().intersects(x)) {
-				mLowerBound -= x.height + host.getHeight() - x.y;
+				mLowerBound -= x.height + SCREEN_HEIGHT - x.y;
 				break;
 			} else {
 				mLowerBound = mDefaultBound;
@@ -187,7 +186,7 @@ public class Game extends GameState  {
 				for (Obstacle obstacle : mObastcles) {
 					obstacle.x -= PLAYER_SPEED;
 				}
-				for(Sprite powerup:mPowerups){
+				for(Entity powerup:mItems){
 					powerup.move(-PLAYER_SPEED, 0);
 				}
 			} else {
@@ -206,7 +205,7 @@ public class Game extends GameState  {
 				for (Obstacle obstacle : mObastcles) {
 					obstacle.x += PLAYER_SPEED;
 				}
-				for(Sprite powerup:mPowerups){
+				for(Entity powerup:mItems){
 					powerup.move(PLAYER_SPEED, 0);
 				}
 
@@ -235,7 +234,7 @@ public class Game extends GameState  {
 				for (Obstacle obstacle : mObastcles) {
 					obstacle.x -= PLAYER_SPEED;
 				}
-				for(Sprite powerup:mPowerups){
+				for(Entity powerup:mItems){
 					powerup.move(-PLAYER_SPEED, 0);
 				}
 			}
@@ -260,7 +259,7 @@ public class Game extends GameState  {
 				for (Obstacle obstacle : mObastcles) {
 					obstacle.x += PLAYER_SPEED;
 				}
-				for(Sprite powerup:mPowerups){
+				for(Entity powerup:mItems){
 					powerup.move(PLAYER_SPEED, 0);
 				}
 			}
@@ -270,7 +269,7 @@ public class Game extends GameState  {
 
 		mMainCharacter.update();
 		
-		for(Sprite powerup:mPowerups){
+		for(Entity powerup:mItems){
 			powerup.update();
 		}
 

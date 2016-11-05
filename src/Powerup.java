@@ -2,8 +2,8 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
 
-public class Sprite extends Entity {
-
+public class Powerup extends Entity{
+	
 	private SpriteSheet mSpriteSheet;
 	private double mX, mY;
 	private int animationID = 0;
@@ -15,7 +15,7 @@ public class Sprite extends Entity {
 	// private boolean isJumping=false;
 	// private int jumpCount=0;
 
-	public Sprite(SpriteSheet spriteSheet, int x, int y) {
+	public Powerup(SpriteSheet spriteSheet, int x, int y) {
 
 		mSpriteSheet = spriteSheet;
 		mX = x;
@@ -129,4 +129,5 @@ public class Sprite extends Entity {
 		mSpriteSheet=sheet;
 		
 	}
+
 }
