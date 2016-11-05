@@ -30,6 +30,7 @@ public class SideScroller extends GameFrame {
 	private AffineTransform mTransform;
 	private Background mBackground;
 	private boolean mMiddle = false, mBack = false;
+	private MovingMap mMovingMap;
 
 	private Rectangle rect = new Rectangle(0, getWidth() - 40, 100, 40);
 
@@ -37,6 +38,7 @@ public class SideScroller extends GameFrame {
 		super(title, sizeX, sizeY);
 		setUpdateRate(60);
 		mBackground = new Background();
+		mMovingMap = new MovingMap();
 		mTransform = new AffineTransform();
 		mSpriteSheet = new SpriteSheet("sheet.png", 10, 4);
 		mSprite = new Sprite(mSpriteSheet, 0, getHeight() - mSpriteSheet.getFrameHeight());
@@ -61,6 +63,7 @@ public class SideScroller extends GameFrame {
 		g.setBackground(Color.white);
 		g.clearRect(0, 0, sw, sh);
 		mBackground.draw(g);
+		mMovingMap.draw(g);
 		mSprite.draw(g);
 		g.setColor(Color.orange);
 		g.draw(rect);
@@ -118,6 +121,7 @@ public class SideScroller extends GameFrame {
 			else
 				mMiddle = false;
 			mBackground.update(1, mMiddle);
+			mMovingMap.update(1);
 
 		} else if (mPressedKeys.contains(KeyEvent.VK_LEFT)) {
 			if (mSprite.getX()==0)return;
@@ -133,6 +137,7 @@ public class SideScroller extends GameFrame {
 			else
 				mBack = false;
 			mBackground.update(0, mBack);
+			mMovingMap.update(0);
 		}
 
 		mSprite.update();

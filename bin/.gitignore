@@ -2,3 +2,11 @@
 /Sprite.class
 /SpriteSheet.class
 /Background.class
+/Map.class
+/MovingMap.class
+/MovingMap$Tile.class
+/Const.class
+/Game.class
+/GameFont.class
+/Menu.class
+/Strings.class
