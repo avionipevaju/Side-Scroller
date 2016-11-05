@@ -7,10 +7,6 @@ import rafgfxlib.Util;
 public class Main {
 
 	public static void main(String[] args) {
-		//System.out.println("Igrica kida!");
-		//GameFrame gf = new SideScroller("Kid A - The Game", 800, 600);
-		//gf.initGameWindow();
-		
 		new GameFont(Strings.FONT_PATH);
 		GameHost host = new GameHost(Strings.TITLE, Const.WIDTH, Const.HEIGHT);
 		host.setUpdateRate(60);
@@ -20,6 +16,7 @@ public class Main {
 		
 		new Menu(host);
 		new Game(host);
+		new Leaderboard(host);
 		
 		host.setState(Strings.MENU);
 

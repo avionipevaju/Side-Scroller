@@ -12,15 +12,33 @@ import rafgfxlib.Util;
 
 public class Menu extends GameState {
 	
-	private Rectangle mPlay, mLeaderboard, mExit;
-	private BufferedImage mLogo;
+	private Rectangle mPlay, mLeaderboard, mExit, mMouse;
+	private BufferedImage mLogo, mBackground, mUfo;
+	private BufferedImage mMortyR, mMortyL, mMorty;
+	private BufferedImage mRickR, mRickL, mRick;
+	private int mMortyX = 805, mMortyY = 450;
+	private int mRickX = 850, mRickY = 450;
+	private int mSpeed = 15, mCounter = 5;
+	private int mUfoX = 880, mUfoY = 200;
+	private int mUfoSpeed = 10;
+	private boolean mLeft = true;
+
 
 	public Menu(GameHost host) {
 		super(host);
 		
 		int centerX = host.getWidth()/2 - 150;
 		int centerY = host.getHeight()/2 - 100;
+		mMouse = new Rectangle();
 		mLogo = Util.loadImage("logo.png");
+		mBackground = Util.loadImage("menu.jpg");
+		mMortyR = Util.loadImage("morty_right.png");
+		mMortyL = Util.loadImage("morty_left.png");
+		mMorty = mMortyR;
+		mRickR = Util.loadImage("rick_right.png");
+		mRickL = Util.loadImage("rick_left.png");
+		mRick = mRickR;
+		mUfo = Util.loadImage("ufo.png");
 		mPlay = new Rectangle(centerX, centerY, Const.MENU_BUTTON_WIDTH, Const.MENU_BUTTON_HEIGHT);
 		mLeaderboard = new Rectangle(centerX, centerY + 60, Const.MENU_BUTTON_WIDTH, Const.MENU_BUTTON_HEIGHT);
 		mExit = new Rectangle(centerX, centerY + 120, Const.MENU_BUTTON_WIDTH, Const.MENU_BUTTON_HEIGHT);
@@ -49,7 +67,8 @@ public class Menu extends GameState {
 	}
 	
 	private void drawButton(Graphics2D g, Rectangle rect, String text, int offset) {
-		g.setColor(Color.cyan);
+		if (mMouse.intersects(rect)) g.setColor(Color.RED);
+		else g.setColor(Color.CYAN);
 		g.drawRect(rect.x, rect.y, rect.width, rect.height);
 		g.setFont(Const.MENU_FONT);
 		g.drawString(text, rect.x + offset, rect.y + 40);
@@ -59,7 +78,11 @@ public class Menu extends GameState {
 	public void render(Graphics2D g, int sw, int sh) {
 		g.setBackground(Color.DARK_GRAY);
 		g.clearRect(0, 0, sw, sh);
+		g.drawImage(mBackground, 0, 0, Const.WIDTH, Const.HEIGHT, null);
 		g.drawImage(mLogo, 220, 40, null);
+		g.drawImage(mMorty, mMortyX, mMortyY, null);
+		g.drawImage(mRick, mRickX, mRickY, null);
+		g.drawImage(mUfo, mUfoX, mUfoY, null);
 		drawButton(g, mPlay, Strings.PLAY, 110);
 		drawButton(g, mLeaderboard, Strings.LEADERBOARD, 60);
 		drawButton(g, mExit, Strings.EXIT, 110);
@@ -68,7 +91,31 @@ public class Menu extends GameState {
 
 	@Override
 	public void update() {
-		// TODO Auto-generated method stub
+		if (mCounter == 0){
+			if (mLeft){
+				mMorty = mMortyL;
+				mRick = mRickL;
+				mLeft = false;
+			}
+			else {
+				mMorty = mMortyR;
+				mRick = mRickR;
+				mLeft = true;
+			}
+			mMortyX -= mSpeed;
+			mRickX -= mSpeed;
+			mUfoX -= mUfoSpeed;
+			mCounter = 10;
+			
+		}
+		mCounter--;
+		
+		if (mUfoX < -mUfo.getWidth()) {
+			mMortyX = 805;
+			mRickX = 850;
+			mUfoX = 880;
+		}
+
 		
 	}
 
@@ -80,11 +127,11 @@ public class Menu extends GameState {
 
 	@Override
 	public void handleMouseUp(int x, int y, GFMouseButton button) {
-		Rectangle rect = new Rectangle(x, y, 1, 1);
+		mMouse = new Rectangle(x, y, 1, 1);
 		if (button == GFMouseButton.Left) {
-			if (rect.intersects(mPlay)) host.setState(Strings.PLAY);
-			if (rect.intersects(mLeaderboard)) System.out.println("Show leaderboard!");
-			if (rect.intersects(mExit)) host.exit();
+			if (mMouse.intersects(mPlay)) host.setState(Strings.PLAY);
+			if (mMouse.intersects(mLeaderboard)) host.setState(Strings.LEADERBOARD);
+			if (mMouse.intersects(mExit)) host.exit();
 			
 		}
 		
@@ -92,7 +139,7 @@ public class Menu extends GameState {
 
 	@Override
 	public void handleMouseMove(int x, int y) {
-		// TODO Auto-generated method stub
+		mMouse = new Rectangle(x, y, 1, 1);
 		
 	}
 
