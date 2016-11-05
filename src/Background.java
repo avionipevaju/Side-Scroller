@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import rafgfxlib.Util;
 
 public class Background {
-	
 	private static final int IMAGE_WIDTH = 800;
 	private static final int IMAGE_HEIGHT = 600;
 	private static final String SUNSET_PATH = "city_sunset.png";
@@ -41,7 +40,7 @@ public class Background {
 			if (mNightX == -IMAGE_WIDTH) mNightX = IMAGE_WIDTH;
 		}
 		if (direction == 0) {
-			if (mEnd) return ;
+			if (mEnd || !middle) return ;
 			mSunsetX += 5;
 			mNightX += 5;
 			mCounter--;
@@ -59,7 +58,6 @@ public class Background {
 	public long getCounter() {
 		return mCounter;
 	}
-
 	
 
 }
