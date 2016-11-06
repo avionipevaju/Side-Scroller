@@ -211,7 +211,7 @@ public class Game extends GameState {
 		String[] temp;
 		BufferedReader reader;
 		String line = null;
-		BufferedImage img = null;
+		String img = null;
 
 		try {
 			reader = new BufferedReader(new FileReader("./enemy_positions.txt"));
@@ -221,8 +221,8 @@ public class Game extends GameState {
 				int y = Integer.valueOf(temp[1]);
 				int limitF = Integer.valueOf(temp[2]);
 				int limitB = Integer.valueOf(temp[3]);
-				// img = choseEnemy();
-				SpriteSheet enemySheet = new SpriteSheet("enemy.png", 4, 3);
+				img = choseEnemy();
+				SpriteSheet enemySheet = new SpriteSheet(img, 4, 3);
 				Enemy enemy = new Enemy(enemySheet, x, y - enemySheet.getFrameHeight(),
 						limitF - enemySheet.getFrameWidth(), limitB);
 				enemy.play();
@@ -236,18 +236,18 @@ public class Game extends GameState {
 		}
 	}
 
-	private BufferedImage choseEnemy() {
+	private String choseEnemy() {
 		Random rnd = new Random();
-		BufferedImage temp = null;
+		String temp = null;
 		switch (rnd.nextInt(3)) {
 		case 0:
-			temp = Util.loadImage("enemy.png");
+			temp = "enemy.png";
 			break;
 		case 1:
-			temp = Util.loadImage("");
+			temp = "flargo.png";
 			break;
 		case 2:
-			temp = Util.loadImage("");
+			temp = "bluu.png";
 			break;
 		default:
 			break;
