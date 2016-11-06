@@ -1,9 +1,10 @@
 
-
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
@@ -14,9 +15,8 @@ import rafgfxlib.GameHost.GFMouseButton;
 import rafgfxlib.GameState;
 import rafgfxlib.Util;
 
-public class Game extends GameState  {
-	
-	
+public class Game extends GameState {
+
 	private static final long serialVersionUID = 1L;
 
 	private static final int PLAYER_SPEED = 5;
@@ -32,24 +32,24 @@ public class Game extends GameState  {
 	private int mDefaultBound;
 	private int mJumpDuration;
 	private int mLowerBound;
+	private int mCoinCount;
+	private int mHealthCount;
 
 	private final Set<Integer> mPressedKeys;
-	private SpriteSheet mSpriteSheet, mAltSheet, mCoinSheet;
+	private SpriteSheet mSpriteSheet, mAltSheet, mCoinSheet,mHealthSheet;
 	private Sprite mMainCharacter;
-	private Powerup mCoin;
 	private Background mBackground;
 	private boolean mMiddle = false, mBack = false;
 
 	private ArrayList<Obstacle> mObastcles;
 	private ArrayList<Entity> mItems;
-	
 
 	public Game(GameHost host) {
 		super(host);
 		generateMainCharacter();
-		generatePowerups();
+		generateItems();
 		generateObstacles();
-		
+
 		mBackground = new Background();
 		mPressedKeys = new HashSet<Integer>();
 		mDefaultBound = SCREEN_HEIGHT - mMainCharacter.getSpriteSheet().getFrameHeight();
@@ -69,16 +69,14 @@ public class Game extends GameState  {
 	@Override
 	public void resumeState() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void suspendState() {
 		// TODO Auto-generated method stub
-		
-	}
 
-	
+	}
 
 	public void generateObstacles() {
 
@@ -86,20 +84,43 @@ public class Game extends GameState  {
 		Obstacle temp;
 		Random r = new Random();
 		int x, y;
-		BufferedImage image = Util.loadImage("block.png");
+		BufferedImage image = Util.loadImage("space_block.png");
 
-		for (int i = 0; i < 50; i++) {
-			x = r.nextInt(4000);
-			y = r.nextInt(600);
-			temp = new Obstacle(image, x, y, 100, 30);
-			mObastcles.add(temp);
+		BufferedReader reader;
+		String line = null;
+		
+		try {
+			reader = new BufferedReader(new FileReader("./level1.txt"));
+			while ((line = reader.readLine()) != null) {
+				x = Integer.valueOf(line);
+				line = reader.readLine();
+				if(line==null)
+					break;
+				y = Integer.valueOf(line);
+				temp = new Obstacle(image, x, y, 100, 30);
+				mObastcles.add(temp);
+			}
 
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+		
+		
+
+//		for (int i = 0; i < 50; i++) {
+//			x = r.nextInt(4000);
+//			y = r.nextInt(600);
+//			temp = new Obstacle(image, x, y, 100, 30);
+//			mObastcles.add(temp);
+//
+//		}
 
 	}
 
 	public void generateMainCharacter() {
 
+		mCoinCount=0;
+		mHealthCount=100;
 		mSpriteSheet = new SpriteSheet("jerry_sheet2.png", 4, 3);
 		mAltSheet = new SpriteSheet("badass_sheet.png", 4, 3);
 
@@ -110,16 +131,64 @@ public class Game extends GameState  {
 		mMainCharacter.play();
 	}
 
-	public void generatePowerups() {
-		
-		mItems=new ArrayList<>();
+	public void generateItems() {
 
-		mCoinSheet = new SpriteSheet("coin.png", 8, 2);
-		mCoin = new Powerup(mCoinSheet, 500, SCREEN_HEIGHT - mCoinSheet.getFrameHeight());
-		mCoin.setAnimation(ANIM_IDLE);
-		mCoin.play();
+		Coin temp;
+		Powerup temp1;
+		Random r = new Random();
+		int x, y;
+		mItems = new ArrayList<>();
+		mCoinSheet = new SpriteSheet("coins.png", 8, 1);
+		mHealthSheet=new SpriteSheet("health.png", 12, 1);
 		
-		mItems.add(mCoin);
+		BufferedReader reader;
+		String line = null;
+		
+		try {
+			reader = new BufferedReader(new FileReader("./level1coins.txt"));
+			while ((line = reader.readLine()) != null) {
+				x = Integer.valueOf(line);
+				line = reader.readLine();
+				if(line==null)
+					break;
+				y = Integer.valueOf(line);
+				temp = new Coin(mCoinSheet, x, y);
+				temp.setAnimation(ANIM_IDLE);
+				temp.play();
+				mItems.add(temp);
+
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+
+		for(int i=0;i<10;i++){
+			x = r.nextInt(4000);
+			y = r.nextInt(600);
+			temp1 = new Powerup(mHealthSheet, x, y);
+			temp1.setAnimation(ANIM_IDLE);
+			temp1.play();
+			mItems.add(temp1);
+		}
+
+//		for (int i = 0; i < 50; i++) {
+//			x = r.nextInt(4000);
+//			y = r.nextInt(600);
+//			temp = new Coin(mCoinSheet, x, y);
+//			temp.setAnimation(ANIM_IDLE);
+//			temp.play();
+//			mItems.add(temp);
+//
+//		}
+
+		// mCoin = new Powerup(mCoinSheet, 500, SCREEN_HEIGHT -
+		// mCoinSheet.getFrameHeight());
+		// mCoin.setAnimation(ANIM_IDLE);
+		// mCoin.play();
+
+		// mItems.add(mCoin);
 	}
 
 	@Override
@@ -128,6 +197,10 @@ public class Game extends GameState  {
 		g.clearRect(0, 0, sw, sh);
 
 		mBackground.draw(g);
+		
+		g.setFont(Const.IN_GAME_FONT);
+		g.setColor(Color.white);
+		g.drawString("Score: "+mCoinCount, 0, 30);
 
 		g.setColor(Color.orange);
 
@@ -136,9 +209,8 @@ public class Game extends GameState  {
 			obstacle.drawTo(g, obstacle.x, obstacle.y);
 		}
 
-
 		mMainCharacter.draw(g);
-		
+
 		for (Entity powerup : mItems) {
 			powerup.draw(g);
 		}
@@ -148,19 +220,25 @@ public class Game extends GameState  {
 	@Override
 	public void update() {
 
-		Entity temp=null;
-		
-		for(Entity powerup:mItems){
-			if (mMainCharacter.getRect().intersects(powerup.getRect())) {
-				mMainCharacter.setSpriteSheet(mAltSheet);
-				temp=powerup;
-				break;
+		Entity temp = null;
+
+		for (Entity item : mItems) {
+
+			if (mMainCharacter.getRect().intersects(item.getRect())) {
+				if (item instanceof Coin) {
+					temp = item;
+					mCoinCount+=100;
+					break;
+				}
+				if (item instanceof Powerup) {
+					mMainCharacter.setSpriteSheet(mAltSheet);
+					temp = item;
+					break;
+				}
 			}
 		}
-		if(temp!=null)
+		if (temp != null)
 			mItems.remove(temp);
-			
-		
 
 		for (Obstacle x : mObastcles) {
 
@@ -186,7 +264,7 @@ public class Game extends GameState  {
 				for (Obstacle obstacle : mObastcles) {
 					obstacle.x -= PLAYER_SPEED;
 				}
-				for(Entity powerup:mItems){
+				for (Entity powerup : mItems) {
 					powerup.move(-PLAYER_SPEED, 0);
 				}
 			} else {
@@ -205,7 +283,7 @@ public class Game extends GameState  {
 				for (Obstacle obstacle : mObastcles) {
 					obstacle.x += PLAYER_SPEED;
 				}
-				for(Entity powerup:mItems){
+				for (Entity powerup : mItems) {
 					powerup.move(PLAYER_SPEED, 0);
 				}
 
@@ -234,7 +312,7 @@ public class Game extends GameState  {
 				for (Obstacle obstacle : mObastcles) {
 					obstacle.x -= PLAYER_SPEED;
 				}
-				for(Entity powerup:mItems){
+				for (Entity powerup : mItems) {
 					powerup.move(-PLAYER_SPEED, 0);
 				}
 			}
@@ -259,7 +337,7 @@ public class Game extends GameState  {
 				for (Obstacle obstacle : mObastcles) {
 					obstacle.x += PLAYER_SPEED;
 				}
-				for(Entity powerup:mItems){
+				for (Entity powerup : mItems) {
 					powerup.move(PLAYER_SPEED, 0);
 				}
 			}
@@ -268,13 +346,12 @@ public class Game extends GameState  {
 		}
 
 		mMainCharacter.update();
-		
-		for(Entity powerup:mItems){
+
+		for (Entity powerup : mItems) {
 			powerup.update();
 		}
 
 	}
-
 
 	@Override
 	public void handleMouseDown(int x, int y, GFMouseButton button) {
@@ -296,7 +373,7 @@ public class Game extends GameState  {
 
 	@Override
 	public void handleKeyDown(int keyCode) {
-		
+
 		mPressedKeys.add(keyCode);
 
 	}
@@ -304,7 +381,6 @@ public class Game extends GameState  {
 	@Override
 	public void handleKeyUp(int keyCode) {
 
-		
 		mPressedKeys.remove(keyCode);
 
 		if (keyCode == KeyEvent.VK_SPACE)
