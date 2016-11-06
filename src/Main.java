@@ -14,11 +14,12 @@ public class Main {
 		BufferedImage icon = Util.loadImage("icon.png");
 		host.setIcon(icon);
 		
+		new SplashScreen(host);
 		new Menu(host);
 		new Game(host);
 		new Leaderboard(host);
 		
-		host.setState(Strings.MENU);
+		host.setState(Strings.SPLASH);
 
 
 	}
