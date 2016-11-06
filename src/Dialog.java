@@ -61,7 +61,7 @@ public class Dialog extends JDialog {
 		score.setFont(Const.MENU_FONT);
 		center.add(score);
 		
-		JLabel sc = new JLabel("800");
+		JLabel sc = new JLabel(String.valueOf(mScore));
 		sc.setFont(Const.MENU_FONT);
 		center.add(sc);
 		
