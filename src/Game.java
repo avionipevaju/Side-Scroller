@@ -34,9 +34,10 @@ public class Game extends GameState {
 	private int mLowerBound;
 	private int mCoinCount;
 	private int mHealthCount;
+	private int mPowerupDuration = 600;
 
 	private final Set<Integer> mPressedKeys;
-	private SpriteSheet mSpriteSheet, mAltSheet, mCoinSheet,mHealthSheet;
+	private SpriteSheet mSpriteSheet, mAltSheet, mCoinSheet, mHealthSheet;
 	private Sprite mMainCharacter;
 	private Background mBackground;
 	private boolean mMiddle = false, mBack = false;
@@ -88,13 +89,13 @@ public class Game extends GameState {
 
 		BufferedReader reader;
 		String line = null;
-		
+
 		try {
 			reader = new BufferedReader(new FileReader("./level1.txt"));
 			while ((line = reader.readLine()) != null) {
 				x = Integer.valueOf(line);
 				line = reader.readLine();
-				if(line==null)
+				if (line == null)
 					break;
 				y = Integer.valueOf(line);
 				temp = new Obstacle(image, x, y, 100, 30);
@@ -104,23 +105,21 @@ public class Game extends GameState {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
 
-//		for (int i = 0; i < 50; i++) {
-//			x = r.nextInt(4000);
-//			y = r.nextInt(600);
-//			temp = new Obstacle(image, x, y, 100, 30);
-//			mObastcles.add(temp);
-//
-//		}
+		// for (int i = 0; i < 50; i++) {
+		// x = r.nextInt(4000);
+		// y = r.nextInt(600);
+		// temp = new Obstacle(image, x, y, 100, 30);
+		// mObastcles.add(temp);
+		//
+		// }
 
 	}
 
 	public void generateMainCharacter() {
 
-		mCoinCount=0;
-		mHealthCount=100;
+		mCoinCount = 0;
+		mHealthCount = 100;
 		mSpriteSheet = new SpriteSheet("jerry_sheet2.png", 4, 3);
 		mAltSheet = new SpriteSheet("badass_sheet.png", 4, 3);
 
@@ -139,17 +138,18 @@ public class Game extends GameState {
 		int x, y;
 		mItems = new ArrayList<>();
 		mCoinSheet = new SpriteSheet("coins.png", 8, 1);
-		mHealthSheet=new SpriteSheet("health.png", 12, 1);
-		
+		// mHealthSheet = new SpriteSheet("strong.png", 15, 1);
+		mHealthSheet = new SpriteSheet("health.png", 12, 1);
+
 		BufferedReader reader;
 		String line = null;
-		
+
 		try {
 			reader = new BufferedReader(new FileReader("./level1coins.txt"));
 			while ((line = reader.readLine()) != null) {
 				x = Integer.valueOf(line);
 				line = reader.readLine();
-				if(line==null)
+				if (line == null)
 					break;
 				y = Integer.valueOf(line);
 				temp = new Coin(mCoinSheet, x, y);
@@ -162,26 +162,44 @@ public class Game extends GameState {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 
-		for(int i=0;i<10;i++){
-			x = r.nextInt(4000);
-			y = r.nextInt(600);
-			temp1 = new Powerup(mHealthSheet, x, y);
-			temp1.setAnimation(ANIM_IDLE);
-			temp1.play();
-			mItems.add(temp1);
+		line = null;
+		try {
+			reader = new BufferedReader(new FileReader("./level1helath.txt"));
+			while ((line = reader.readLine()) != null) {
+				x = Integer.valueOf(line);
+				line = reader.readLine();
+				if (line == null)
+					break;
+				y = Integer.valueOf(line);
+				temp1 = new Powerup(mHealthSheet, x, y);
+				temp1.setAnimation(ANIM_IDLE);
+				temp1.play();
+				mItems.add(temp1);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
-//		for (int i = 0; i < 50; i++) {
-//			x = r.nextInt(4000);
-//			y = r.nextInt(600);
-//			temp = new Coin(mCoinSheet, x, y);
-//			temp.setAnimation(ANIM_IDLE);
-//			temp.play();
-//			mItems.add(temp);
-//
-//		}
+		// for(int i=0;i<10;i++){
+		// x = r.nextInt(4000);
+		// y = r.nextInt(600);
+		// temp1 = new Powerup(mHealthSheet, x, y);
+		// temp1.setAnimation(ANIM_IDLE);
+		// temp1.play();
+		// mItems.add(temp1);
+		// }
+
+		// for (int i = 0; i < 50; i++) {
+		// x = r.nextInt(4000);
+		// y = r.nextInt(600);
+		// temp = new Coin(mCoinSheet, x, y);
+		// temp.setAnimation(ANIM_IDLE);
+		// temp.play();
+		// mItems.add(temp);
+		//
+		// }
 
 		// mCoin = new Powerup(mCoinSheet, 500, SCREEN_HEIGHT -
 		// mCoinSheet.getFrameHeight());
@@ -197,10 +215,10 @@ public class Game extends GameState {
 		g.clearRect(0, 0, sw, sh);
 
 		mBackground.draw(g);
-		
+
 		g.setFont(Const.IN_GAME_FONT);
 		g.setColor(Color.white);
-		g.drawString("Score: "+mCoinCount, 0, 30);
+		g.drawString("Score: " + mCoinCount, 0, 30);
 
 		g.setColor(Color.orange);
 
@@ -227,7 +245,7 @@ public class Game extends GameState {
 			if (mMainCharacter.getRect().intersects(item.getRect())) {
 				if (item instanceof Coin) {
 					temp = item;
-					mCoinCount+=100;
+					mCoinCount += 100;
 					break;
 				}
 				if (item instanceof Powerup) {
