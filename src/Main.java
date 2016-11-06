@@ -3,6 +3,14 @@ import java.awt.image.BufferedImage;
 import rafgfxlib.GameFrame;
 import rafgfxlib.GameHost;
 import rafgfxlib.Util;
+import states.Game;
+import states.Leaderboard;
+import states.Menu;
+import states.Options;
+import states.SplashScreen;
+import utils.Const;
+import utils.GameFont;
+import utils.Strings;
 
 public class Main {
 
@@ -11,7 +19,7 @@ public class Main {
 		GameHost host = new GameHost(Strings.TITLE, Const.WIDTH, Const.HEIGHT);
 		host.setUpdateRate(60);
 		
-		BufferedImage icon = Util.loadImage("icon.png");
+		BufferedImage icon = Util.loadImage("./resource/icon.png");
 		host.setIcon(icon);
 		
 		new SplashScreen(host);

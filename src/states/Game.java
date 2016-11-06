@@ -1,3 +1,4 @@
+package states;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -10,10 +11,22 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
+import models.Coin;
+import models.Enemy;
+import models.Entity;
+import models.Obstacle;
+import models.Powerup;
+import models.Sprite;
+import models.SpriteSheet;
 import rafgfxlib.GameHost;
 import rafgfxlib.GameHost.GFMouseButton;
 import rafgfxlib.GameState;
 import rafgfxlib.Util;
+import utils.Background;
+import utils.Const;
+import utils.Dialog;
+import utils.PowerupStyle;
+import utils.Strings;
 
 public class Game extends GameState {
 
@@ -88,13 +101,13 @@ public class Game extends GameState {
 		Obstacle temp;
 		Random r = new Random();
 		int x, y;
-		BufferedImage image = Util.loadImage("space_block.png");
+		BufferedImage image = Util.loadImage("./resource/space_block.png");
 
 		BufferedReader reader;
 		String line = null;
 
 		try {
-			reader = new BufferedReader(new FileReader("./level1.txt"));
+			reader = new BufferedReader(new FileReader("./resource/level1.txt"));
 			while ((line = reader.readLine()) != null) {
 				x = Integer.valueOf(line);
 				line = reader.readLine();
@@ -115,9 +128,9 @@ public class Game extends GameState {
 
 		mCoinCount = 0;
 		mHealthCount = 100;
-		mSpriteSheet = new SpriteSheet("jerry_sheet2.png", 4, 3);
-		mAltSheet = new SpriteSheet("big_badass.png", 4, 3);
-		mHurtSheet = new SpriteSheet("hurt_jerry.png", 4, 3);
+		mSpriteSheet = new SpriteSheet("./resource/jerry_sheet2.png", 4, 3);
+		mAltSheet = new SpriteSheet("./resource/big_badass.png", 4, 3);
+		mHurtSheet = new SpriteSheet("./resource/hurt_jerry.png", 4, 3);
 
 		mMainCharacter = new Sprite(mSpriteSheet, 0, SCREEN_HEIGHT - mSpriteSheet.getFrameHeight());
 
@@ -133,17 +146,17 @@ public class Game extends GameState {
 		Random r = new Random();
 		int x, y;
 		mItems = new ArrayList<>();
-		mCoinSheet = new SpriteSheet("coins.png", 8, 1);
+		mCoinSheet = new SpriteSheet("./resource/coins.png", 8, 1);
 		// mHealthSheet = new SpriteSheet("strong.png", 15, 1);
-		mHealthSheet = new SpriteSheet("health.png", 12, 1);
-		mBuffSheet = new SpriteSheet("buff.png", 8, 1);
-		mEndSheet = new SpriteSheet("door.png", 3, 1);
+		mHealthSheet = new SpriteSheet("./resource/health.png", 12, 1);
+		mBuffSheet = new SpriteSheet("./resource/buff.png", 8, 1);
+		mEndSheet = new SpriteSheet("./resource/door.png", 3, 1);
 
 		BufferedReader reader;
 		String line = null;
 
 		try {
-			reader = new BufferedReader(new FileReader("./level1coins.txt"));
+			reader = new BufferedReader(new FileReader("./resource/level1coins.txt"));
 			while ((line = reader.readLine()) != null) {
 				x = Integer.valueOf(line);
 				line = reader.readLine();
@@ -164,7 +177,7 @@ public class Game extends GameState {
 
 		line = null;
 		try {
-			reader = new BufferedReader(new FileReader("./level1buff.txt"));
+			reader = new BufferedReader(new FileReader("./resource/level1buff.txt"));
 			while ((line = reader.readLine()) != null) {
 				x = Integer.valueOf(line);
 				line = reader.readLine();
@@ -185,7 +198,7 @@ public class Game extends GameState {
 
 		line = null;
 		try {
-			reader = new BufferedReader(new FileReader("./level1helath.txt"));
+			reader = new BufferedReader(new FileReader("./resource/level1helath.txt"));
 			while ((line = reader.readLine()) != null) {
 				x = Integer.valueOf(line);
 				line = reader.readLine();
@@ -218,7 +231,7 @@ public class Game extends GameState {
 		String img = null;
 
 		try {
-			reader = new BufferedReader(new FileReader("./enemy_positions.txt"));
+			reader = new BufferedReader(new FileReader("./resource/enemy_positions.txt"));
 			while ((line = reader.readLine()) != null) {
 				temp = line.split("-");
 				int x = Integer.valueOf(temp[0]);
@@ -245,13 +258,13 @@ public class Game extends GameState {
 		String temp = null;
 		switch (rnd.nextInt(3)) {
 		case 0:
-			temp = "enemy.png";
+			temp = "./resource/enemy.png";
 			break;
 		case 1:
-			temp = "flargo.png";
+			temp = "./resource/flargo.png";
 			break;
 		case 2:
-			temp = "bluu.png";
+			temp = "./resource/bluu.png";
 			break;
 		default:
 			break;
@@ -305,7 +318,7 @@ public class Game extends GameState {
 
 		switch (mHealthCount) {
 		case 100: {
-			mHealthMeter = Util.loadImage("health_meter_full.png");
+			mHealthMeter = Util.loadImage("./resource/health_meter_full.png");
 			if (mMainCharacter.isPoweredUp())
 				mMainCharacter.setSpriteSheet(mAltSheet);
 			else
@@ -313,7 +326,7 @@ public class Game extends GameState {
 			break;
 		}
 		case 50: {
-			mHealthMeter = Util.loadImage("health_meter_half.png");
+			mHealthMeter = Util.loadImage("./resource/health_meter_half.png");
 			if (mMainCharacter.isPoweredUp())
 				mMainCharacter.setSpriteSheet(mAltSheet);
 			else
@@ -321,7 +334,7 @@ public class Game extends GameState {
 			break;
 		}
 		case 0: {
-			mHealthMeter = Util.loadImage("health_meter.png");
+			mHealthMeter = Util.loadImage("./resource/health_meter.png");
 			// System.out.println("died");
 			mMainCharacter.setSpriteSheet(mHurtSheet);
 			gameEnd();
@@ -450,6 +463,12 @@ public class Game extends GameState {
 				updateAllEntites();
 				return;
 			}
+			
+			if (mMainCharacter.getX() == SCREEN_WIDTH / 4)
+				mBack = true;
+			else
+				mBack = false;
+
 
 			if (mBack) {
 				mMainCharacter.move(0, JUMP_FACTOR);
@@ -524,10 +543,7 @@ public class Game extends GameState {
 				updateAllEntites();
 				return;
 			}
-
-			if (!mBack || mBackground.getCounter() < 20) {
-				mMainCharacter.move(-PLAYER_SPEED, 0);
-			}
+			
 			mMainCharacter.setAnimation(ANIM_LEFT);
 			mMainCharacter.play();
 
@@ -535,6 +551,10 @@ public class Game extends GameState {
 				mBack = true;
 			else
 				mBack = false;
+			
+			if (!mBack || mBackground.getCounter() <=0) {
+				mMainCharacter.move(-PLAYER_SPEED, 0);
+			}
 
 			if (mBack) {
 				for (Obstacle obstacle : mObastcles) {

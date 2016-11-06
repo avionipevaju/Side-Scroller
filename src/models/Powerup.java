@@ -1,6 +1,9 @@
+package models;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
+
+import utils.PowerupStyle;
 
 public class Powerup extends Entity{
 	

@@ -1,3 +1,4 @@
+package utils;
 
 
 import java.awt.BorderLayout;
@@ -12,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import rafgfxlib.GameHost;
+import states.Leaderboard;
 
 public class Dialog extends JDialog {
 	

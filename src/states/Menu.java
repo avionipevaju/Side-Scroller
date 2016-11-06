@@ -1,3 +1,4 @@
+package states;
 
 
 import java.awt.Color;
@@ -7,6 +8,8 @@ import java.awt.image.BufferedImage;
 
 import rafgfxlib.GameHost;
 import rafgfxlib.GameHost.GFMouseButton;
+import utils.Const;
+import utils.Strings;
 import rafgfxlib.GameState;
 import rafgfxlib.Util;
 
@@ -30,15 +33,15 @@ public class Menu extends GameState {
 		int centerX = host.getWidth()/2 - 150;
 		int centerY = host.getHeight()/2 - 100;
 		mMouse = new Rectangle();
-		mLogo = Util.loadImage("logo.png");
-		mBackground = Util.loadImage("menu.jpg");
-		mMortyR = Util.loadImage("morty_right.png");
-		mMortyL = Util.loadImage("morty_left.png");
+		mLogo = Util.loadImage("./resource/logo.png");
+		mBackground = Util.loadImage("./resource/menu.jpg");
+		mMortyR = Util.loadImage("./resource/morty_right.png");
+		mMortyL = Util.loadImage("./resource/morty_left.png");
 		mMorty = mMortyR;
-		mRickR = Util.loadImage("rick_right.png");
-		mRickL = Util.loadImage("rick_left.png");
+		mRickR = Util.loadImage("./resource/rick_right.png");
+		mRickL = Util.loadImage("./resource/rick_left.png");
 		mRick = mRickR;
-		mUfo = Util.loadImage("ufo.png");
+		mUfo = Util.loadImage("./resource/ufo.png");
 		mPlay = new Rectangle(centerX, centerY, Const.MENU_BUTTON_WIDTH, Const.MENU_BUTTON_HEIGHT);
 		mLeaderboard = new Rectangle(centerX, centerY + 60, Const.MENU_BUTTON_WIDTH, Const.MENU_BUTTON_HEIGHT);
 		mOptions = new Rectangle(centerX, centerY + 120, Const.MENU_BUTTON_WIDTH, Const.MENU_BUTTON_HEIGHT);

@@ -1,3 +1,4 @@
+package models;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
@@ -17,7 +18,7 @@ public class Enemy extends Entity {
 		mY = y;
 		mLimitF = limitF;
 		if (limitB == 0) {
-			limitB = -spriteSheet.getFrameWidth();
+			limitB = -spriteSheet.getFrameWidth()-20;
 			mForward = true;
 		}
 		mLimitB = limitB;

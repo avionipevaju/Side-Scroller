@@ -1,27 +1,55 @@
+package states;
 
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import rafgfxlib.GameHost;
 import rafgfxlib.GameHost.GFMouseButton;
+import utils.Const;
+import utils.Strings;
 import rafgfxlib.GameState;
 import rafgfxlib.Util;
 
-public class Options extends GameState {
-	
+public class Leaderboard extends GameState {
+	 
+	private ArrayList<String> mList = new ArrayList<>();
 	private Rectangle mBack, mMouse;
 	private BufferedImage mBackground;
 
-	public Options(GameHost host) {
+	public Leaderboard(GameHost host) {
 		super(host);
 		
 		mMouse = new Rectangle();
 		mBack = new Rectangle(660, 520, 100, 40);
-		mBackground = Util.loadImage("options_bg.jpg");
+		mBackground = Util.loadImage("./resource/leaderboard_bg.jpg");
 		
+		BufferedReader reader;
+		String line = null;
+		
+		try {
+			reader = new BufferedReader(new FileReader("./resource/list.txt"));
+			line = reader.readLine();
+			while (line != null) {
+				mList.add(line);
+				line = reader.readLine();
+			}
+			reader.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		 
 	}
 
 	@Override
@@ -31,7 +59,7 @@ public class Options extends GameState {
 
 	@Override
 	public String getName() {
-		return Strings.OPTIONS;
+		return Strings.LEADERBOARD;
 	}
 
 	@Override
@@ -54,14 +82,14 @@ public class Options extends GameState {
 		int centerX = host.getWidth()/2,  y = 110;
 		g.setFont(Const.MENU_FONT);
 		g.setColor(Color.CYAN);
-		g.drawString(Strings.OPTIONS, centerX - 110, 60);
-		g.drawString("Controls:", 10, 100);
-		g.drawString(Strings.LEFT_ARROW, 10, 150);
-		g.drawString(Strings.RIGHT_ARROW, 10, 200);
-		g.drawString(Strings.SPACE, 10, 250);
+		g.drawString(Strings.LEADERBOARD, centerX - 110, 60);
+		int counter = 1;
+		for (String line: mList) {
+			g.drawString(counter + ". " + line, centerX - 100, y);
+			y += 40;
+			counter++;
+		}
 		drawButton(g, mBack, Strings.BACK, 15);
-
-		
 	}
 	
 	private void drawButton(Graphics2D g, Rectangle rect, String text, int offset) {
@@ -71,6 +99,7 @@ public class Options extends GameState {
 		g.setFont(Const.MENU_FONT);
 		g.drawString(text, rect.x + offset, rect.y + 40);
 	}
+
 
 	@Override
 	public void update() {
@@ -89,7 +118,6 @@ public class Options extends GameState {
 		mMouse = new Rectangle(x, y, 1, 1);
 		if (button == GFMouseButton.Left)
 			if (mMouse.intersects(mBack)) host.setState(Strings.MENU);
-
 		
 	}
 
@@ -107,8 +135,31 @@ public class Options extends GameState {
 
 	@Override
 	public void handleKeyUp(int keyCode) {
-		// TODO Auto-generated method stub
+		if (keyCode == KeyEvent.VK_ESCAPE) host.setState(Strings.MENU);
 		
+	}
+	
+	public void checkList(int score, String name) {
+		for(int i = 0; i < mList.size(); i++) {
+			String[] temp = mList.get(i).split("-");
+			if (score <= Integer.valueOf(temp[1].trim())) continue ;
+			String newscore = name + "-" + score;
+			mList.add(i, newscore);
+			mList.remove(mList.size()-1);
+			BufferedWriter writer;
+			
+			try {
+				writer = new BufferedWriter(new FileWriter("./resource/list.txt"));
+				for (String line: mList) {
+					writer.write(line+"\n");
+				}
+				writer.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			break;
+		}
 	}
 
 }

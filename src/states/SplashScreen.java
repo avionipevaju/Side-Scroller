@@ -1,3 +1,4 @@
+package states;
 
 
 import java.awt.AlphaComposite;
@@ -7,6 +8,8 @@ import java.awt.image.BufferedImage;
 
 import rafgfxlib.GameHost;
 import rafgfxlib.GameHost.GFMouseButton;
+import utils.Const;
+import utils.Strings;
 import rafgfxlib.GameState;
 import rafgfxlib.Util;
 
@@ -18,8 +21,8 @@ public class SplashScreen extends GameState {
 
 	public SplashScreen(GameHost host) {
 		super(host);
-		mImg = Util.loadImage("splash.jpg");
-		mBack = Util.loadImage("menu.jpg");
+		mImg = Util.loadImage("./resource/splash.jpg");
+		mBack = Util.loadImage("./resource/menu.jpg");
 	}
 
 	@Override
