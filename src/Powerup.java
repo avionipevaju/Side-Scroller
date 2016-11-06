@@ -11,15 +11,17 @@ public class Powerup extends Entity{
 	private boolean animPlaying = false;
 	private int frameInterval = 4;
 	private int frameCountdown = 0;
+	private PowerupStyle mStyle;
 
 	// private boolean isJumping=false;
 	// private int jumpCount=0;
 
-	public Powerup(SpriteSheet spriteSheet, int x, int y) {
+	public Powerup(SpriteSheet spriteSheet, int x, int y,PowerupStyle style) {
 
 		mSpriteSheet = spriteSheet;
 		mX = x;
 		mY = y;
+		mStyle=style;
 
 	}
 
@@ -130,4 +132,10 @@ public class Powerup extends Entity{
 		
 	}
 
+
+	public PowerupStyle getStyle() {
+		return mStyle;
+	}
+	
+	
 }

@@ -39,7 +39,7 @@ public class Game extends GameState {
 	private int mPowerupDuration = 600;
 
 	private final Set<Integer> mPressedKeys;
-	private SpriteSheet mSpriteSheet, mAltSheet, mCoinSheet, mHealthSheet, mHurtSheet;
+	private SpriteSheet mSpriteSheet, mAltSheet, mCoinSheet, mHealthSheet, mHurtSheet,mBuffSheet;;
 	private Sprite mMainCharacter;
 	private Background mBackground;
 	private boolean mMiddle = false, mBack = false;
@@ -118,7 +118,7 @@ public class Game extends GameState {
 		mCoinCount = 0;
 		mHealthCount = 100;
 		mSpriteSheet = new SpriteSheet("jerry_sheet2.png", 4, 3);
-		mAltSheet = new SpriteSheet("badass_sheet.png", 4, 3);
+		mAltSheet = new SpriteSheet("big_badass.png", 4, 3);
 		mHurtSheet = new SpriteSheet("hurt_jerry.png", 4, 3);
 
 		mMainCharacter = new Sprite(mSpriteSheet, 0, SCREEN_HEIGHT - mSpriteSheet.getFrameHeight());
@@ -138,6 +138,7 @@ public class Game extends GameState {
 		mCoinSheet = new SpriteSheet("coins.png", 8, 1);
 		// mHealthSheet = new SpriteSheet("strong.png", 15, 1);
 		mHealthSheet = new SpriteSheet("health.png", 12, 1);
+		mBuffSheet = new SpriteSheet("buff.png", 8, 1);
 
 		BufferedReader reader;
 		String line = null;
@@ -163,6 +164,26 @@ public class Game extends GameState {
 
 		line = null;
 		try {
+			reader = new BufferedReader(new FileReader("./level1buff.txt"));
+			while ((line = reader.readLine()) != null) {
+				x = Integer.valueOf(line);
+				line = reader.readLine();
+				if (line == null)
+					break;
+				y = Integer.valueOf(line);
+				//temp1 = new Powerup(mHealthSheet, x, y,PowerupStyle.HEALTH);
+				temp1 = new Powerup(mBuffSheet, x, y,PowerupStyle.BUFF);
+				temp1.setAnimation(ANIM_IDLE);
+				temp1.play();
+				mItems.add(temp1);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		line = null;
+		try {
 			reader = new BufferedReader(new FileReader("./level1helath.txt"));
 			while ((line = reader.readLine()) != null) {
 				x = Integer.valueOf(line);
@@ -170,7 +191,7 @@ public class Game extends GameState {
 				if (line == null)
 					break;
 				y = Integer.valueOf(line);
-				temp1 = new Powerup(mHealthSheet, x, y);
+				temp1 = new Powerup(mHealthSheet, x, y,PowerupStyle.HEALTH);
 				temp1.setAnimation(ANIM_IDLE);
 				temp1.play();
 				mItems.add(temp1);
@@ -266,15 +287,22 @@ public class Game extends GameState {
 
 		Entity temp = null;
 
+	
 		switch (mHealthCount) {
 		case 100: {
 			mHealthMeter = Util.loadImage("health_meter_full.png");
-			mMainCharacter.setSpriteSheet(mSpriteSheet);
+			if(mMainCharacter.isPoweredUp())
+				mMainCharacter.setSpriteSheet(mAltSheet);
+			else
+				mMainCharacter.setSpriteSheet(mSpriteSheet);
 			break;
 		}
 		case 50: {
 			mHealthMeter = Util.loadImage("health_meter_half.png");
-			mMainCharacter.setSpriteSheet(mHurtSheet);
+			if(mMainCharacter.isPoweredUp())
+				mMainCharacter.setSpriteSheet(mAltSheet);
+			else
+				mMainCharacter.setSpriteSheet(mHurtSheet);
 			break;
 		}
 		case 0: {
@@ -294,12 +322,18 @@ public class Game extends GameState {
 					break;
 				}
 				if (item instanceof Powerup) {
-					// mMainCharacter.setSpriteSheet(mAltSheet);
-					temp = item;
-					// mMainCharacter.setPoweredUp(true);
-					// mPowerupDuration=600;
-					mHealthCount = 100;
-					break;
+					if(((Powerup) item).getStyle()==PowerupStyle.HEALTH){
+						temp = item;
+						mHealthCount = 100;
+						break;
+						}
+						if(((Powerup) item).getStyle()==PowerupStyle.BUFF){
+						 temp = item;
+						 mMainCharacter.setSpriteSheet(mAltSheet);
+						 mMainCharacter.setPoweredUp(true);
+						 mPowerupDuration=600;
+						 break;
+						}
 				}
 				if (item instanceof Enemy) {
 					if (mMainCharacter.isPoweredUp()) {
@@ -343,7 +377,12 @@ public class Game extends GameState {
 
 		if (mPressedKeys.contains(KeyEvent.VK_RIGHT) && mPressedKeys.contains(KeyEvent.VK_SPACE)
 				&& mJumpDuration <= JUMP_LIMIT) {
-
+			
+			if(mBackground.getCounter()>800){
+				updateAllEntites();
+				return;
+			}
+			
 			if (mMiddle) {
 				mMainCharacter.move(0, JUMP_FACTOR);
 				mJumpDuration++;
@@ -371,6 +410,12 @@ public class Game extends GameState {
 
 		else if (mPressedKeys.contains(KeyEvent.VK_LEFT) && mPressedKeys.contains(KeyEvent.VK_SPACE)
 				&& mJumpDuration <= JUMP_LIMIT) {
+			
+			if (mMainCharacter.getX() == 0){
+				updateAllEntites();
+				return;
+			}
+				
 
 			if (mBack) {
 				mMainCharacter.move(0, JUMP_FACTOR);
@@ -403,6 +448,12 @@ public class Game extends GameState {
 		}
 
 		else if (mPressedKeys.contains(KeyEvent.VK_RIGHT)) {
+			
+			
+			if(mBackground.getCounter()>800){
+				updateAllEntites();
+				return;
+			}
 			if (!mMiddle) {
 				mMainCharacter.move(PLAYER_SPEED, 0);
 			}
@@ -431,8 +482,11 @@ public class Game extends GameState {
 			mBackground.update(1, mMiddle);
 
 		} else if (mPressedKeys.contains(KeyEvent.VK_LEFT)) {
-			if (mMainCharacter.getX() == 0)
+			if (mMainCharacter.getX() == 0){
+				updateAllEntites();
 				return;
+			}
+				
 
 			if (!mBack || mBackground.getCounter() < 20) {
 				mMainCharacter.move(-PLAYER_SPEED, 0);
@@ -465,16 +519,7 @@ public class Game extends GameState {
 			mBackground.update(0, mBack);
 		}
 
-		mMainCharacter.update();
-
-		for (Enemy enemy : mEnemies) {
-			enemy.move();
-			enemy.update();
-		}
-
-		for (Entity powerup : mItems) {
-			powerup.update();
-		}
+		updateAllEntites();
 
 	}
 
@@ -515,5 +560,20 @@ public class Game extends GameState {
 		mMainCharacter.play();
 
 	}
+	
+	public void updateAllEntites(){
+			mMainCharacter.update();
+
+			for (Enemy enemy : mEnemies) {
+				enemy.move();
+				enemy.update();
+			}
+
+			for (Entity powerup : mItems) {
+				powerup.update();
+			}
+		}
+			
+	
 
 }

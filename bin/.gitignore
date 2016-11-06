@@ -9,9 +9,10 @@
 /Main.class
 /Menu.class
 /Obstacle.class
+/Options.class
 /Powerup.class
 /SplashScreen.class
 /Sprite.class
 /SpriteSheet.class
 /Strings.class
-/Options.class
+/PowerupStyle.class
