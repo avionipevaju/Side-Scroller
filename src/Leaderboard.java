@@ -80,10 +80,11 @@ public class Leaderboard extends GameState {
 		g.setFont(Const.MENU_FONT);
 		g.setColor(Color.CYAN);
 		g.drawString(Strings.LEADERBOARD, centerX - 110, 60);
-		
+		int counter = 1;
 		for (String line: mList) {
-			g.drawString(line, centerX - 100, y);
+			g.drawString(counter + ". " + line, centerX - 100, y);
 			y += 40;
+			counter++;
 		}
 		drawButton(g, mBack, Strings.BACK, 15);
 	}
@@ -139,7 +140,7 @@ public class Leaderboard extends GameState {
 		for(int i = 0; i < mList.size(); i++) {
 			String[] temp = mList.get(i).split("-");
 			if (score <= Integer.valueOf(temp[1].trim())) continue ;
-			String newscore = name + "-" + score +"\n";
+			String newscore = name + "-" + score;
 			mList.add(i, newscore);
 			mList.remove(mList.size()-1);
 			BufferedWriter writer;
@@ -147,7 +148,7 @@ public class Leaderboard extends GameState {
 			try {
 				writer = new BufferedWriter(new FileWriter("./list.txt"));
 				for (String line: mList) {
-					writer.write(line);
+					writer.write(line+"\n");
 				}
 				writer.close();
 			} catch (IOException e) {
