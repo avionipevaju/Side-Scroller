@@ -11,6 +11,8 @@ public class Sprite extends Entity {
 	private boolean animPlaying = false;
 	private int frameInterval = 4;
 	private int frameCountdown = 0;
+	
+	private boolean isPoweredUp=false;
 
 	// private boolean isJumping=false;
 	// private int jumpCount=0;
@@ -129,4 +131,15 @@ public class Sprite extends Entity {
 		mSpriteSheet=sheet;
 		
 	}
+
+
+	public boolean isPoweredUp() {
+		return isPoweredUp;
+	}
+
+	public void setPoweredUp(boolean isPoweredUp) {
+		this.isPoweredUp = isPoweredUp;
+	}
+	
+	
 }

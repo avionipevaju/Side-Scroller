@@ -39,10 +39,11 @@ public class Game extends GameState {
 	private int mPowerupDuration = 600;
 
 	private final Set<Integer> mPressedKeys;
-	private SpriteSheet mSpriteSheet, mAltSheet, mCoinSheet, mHealthSheet;
+	private SpriteSheet mSpriteSheet, mAltSheet, mCoinSheet, mHealthSheet, mHurtSheet;
 	private Sprite mMainCharacter;
 	private Background mBackground;
 	private boolean mMiddle = false, mBack = false;
+	private BufferedImage mHealthMeter;
 
 	private ArrayList<Obstacle> mObastcles;
 	private ArrayList<Entity> mItems;
@@ -110,14 +111,6 @@ public class Game extends GameState {
 			e.printStackTrace();
 		}
 
-		// for (int i = 0; i < 50; i++) {
-		// x = r.nextInt(4000);
-		// y = r.nextInt(600);
-		// temp = new Obstacle(image, x, y, 100, 30);
-		// mObastcles.add(temp);
-		//
-		// }
-
 	}
 
 	public void generateMainCharacter() {
@@ -126,6 +119,7 @@ public class Game extends GameState {
 		mHealthCount = 100;
 		mSpriteSheet = new SpriteSheet("jerry_sheet2.png", 4, 3);
 		mAltSheet = new SpriteSheet("badass_sheet.png", 4, 3);
+		mHurtSheet = new SpriteSheet("hurt_jerry.png", 4, 3);
 
 		mMainCharacter = new Sprite(mSpriteSheet, 0, SCREEN_HEIGHT - mSpriteSheet.getFrameHeight());
 
@@ -186,33 +180,8 @@ public class Game extends GameState {
 			e.printStackTrace();
 		}
 
-		// for(int i=0;i<10;i++){
-		// x = r.nextInt(4000);
-		// y = r.nextInt(600);
-		// temp1 = new Powerup(mHealthSheet, x, y);
-		// temp1.setAnimation(ANIM_IDLE);
-		// temp1.play();
-		// mItems.add(temp1);
-		// }
-
-		// for (int i = 0; i < 50; i++) {
-		// x = r.nextInt(4000);
-		// y = r.nextInt(600);
-		// temp = new Coin(mCoinSheet, x, y);
-		// temp.setAnimation(ANIM_IDLE);
-		// temp.play();
-		// mItems.add(temp);
-		//
-		// }
-
-		// mCoin = new Powerup(mCoinSheet, 500, SCREEN_HEIGHT -
-		// mCoinSheet.getFrameHeight());
-		// mCoin.setAnimation(ANIM_IDLE);
-		// mCoin.play();
-
-		// mItems.add(mCoin);
 	}
-	
+
 	public void generateEnemies() {
 		mEnemies = new ArrayList<>();
 		String[] temp;
@@ -228,9 +197,10 @@ public class Game extends GameState {
 				int y = Integer.valueOf(temp[1]);
 				int limitF = Integer.valueOf(temp[2]);
 				int limitB = Integer.valueOf(temp[3]);
-				//img = choseEnemy();
+				// img = choseEnemy();
 				SpriteSheet enemySheet = new SpriteSheet("enemy.png", 4, 3);
-				Enemy enemy = new Enemy(enemySheet, x, y-enemySheet.getFrameHeight(), limitF-enemySheet.getFrameWidth(), limitB);
+				Enemy enemy = new Enemy(enemySheet, x, y - enemySheet.getFrameHeight(),
+						limitF - enemySheet.getFrameWidth(), limitB);
 				enemy.play();
 				mEnemies.add(enemy);
 				mItems.add(enemy);
@@ -240,7 +210,7 @@ public class Game extends GameState {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private BufferedImage choseEnemy() {
 		Random rnd = new Random();
 		BufferedImage temp = null;
@@ -267,6 +237,8 @@ public class Game extends GameState {
 
 		mBackground.draw(g);
 
+		g.drawImage(mHealthMeter, 650, -20, 650 + mHealthMeter.getWidth(), -20 + mHealthMeter.getHeight(), 0, 0,
+				mHealthMeter.getWidth(), mHealthMeter.getHeight(), null);
 		g.setFont(Const.IN_GAME_FONT);
 		g.setColor(Color.white);
 		g.drawString("Score: " + mCoinCount, 0, 30);
@@ -279,7 +251,7 @@ public class Game extends GameState {
 		}
 
 		mMainCharacter.draw(g);
-		for (Enemy enemy: mEnemies) {
+		for (Enemy enemy : mEnemies) {
 			enemy.draw(g);
 		}
 
@@ -294,6 +266,25 @@ public class Game extends GameState {
 
 		Entity temp = null;
 
+		switch (mHealthCount) {
+		case 100: {
+			mHealthMeter = Util.loadImage("health_meter_full.png");
+			mMainCharacter.setSpriteSheet(mSpriteSheet);
+			break;
+		}
+		case 50: {
+			mHealthMeter = Util.loadImage("health_meter_half.png");
+			mMainCharacter.setSpriteSheet(mHurtSheet);
+			break;
+		}
+		case 0: {
+			mHealthMeter = Util.loadImage("health_meter.png");
+			System.out.println("died");
+			mMainCharacter.setSpriteSheet(mHurtSheet);
+			break;
+		}
+		}
+
 		for (Entity item : mItems) {
 
 			if (mMainCharacter.getRect().intersects(item.getRect())) {
@@ -303,17 +294,38 @@ public class Game extends GameState {
 					break;
 				}
 				if (item instanceof Powerup) {
-					mMainCharacter.setSpriteSheet(mAltSheet);
+					// mMainCharacter.setSpriteSheet(mAltSheet);
 					temp = item;
+					// mMainCharacter.setPoweredUp(true);
+					// mPowerupDuration=600;
+					mHealthCount = 100;
 					break;
 				}
 				if (item instanceof Enemy) {
-					System.out.println("Mrtav, ako nije powerUpovan!");
+					if (mMainCharacter.isPoweredUp()) {
+						mEnemies.remove(item);
+						temp=item;
+						break;
+					}
+					// System.out.println("Mrtav, ako nije powerUpovan!");
+					mEnemies.remove(item);
+					mHealthCount -= 50;
+					temp=item;
+					break;
 				}
 			}
 		}
 		if (temp != null)
 			mItems.remove(temp);
+
+		if (mMainCharacter.isPoweredUp()) {
+			mPowerupDuration--;
+		}
+		if (mPowerupDuration == 0) {
+			mMainCharacter.setPoweredUp(false);
+			mMainCharacter.setSpriteSheet(mSpriteSheet);
+			mPowerupDuration = 1;
+		}
 
 		for (Obstacle x : mObastcles) {
 
@@ -342,15 +354,15 @@ public class Game extends GameState {
 				for (Entity powerup : mItems) {
 					powerup.move(-PLAYER_SPEED, 0);
 				}
-				for (Enemy enemy: mEnemies) {
+				for (Enemy enemy : mEnemies) {
 					double x = enemy.getX() - PLAYER_SPEED;
 					enemy.setX(x);
 					double bx = enemy.getmLimitB() - PLAYER_SPEED;
-					enemy.setmLimitB(bx); 
+					enemy.setmLimitB(bx);
 					double fx = enemy.getmLimitF() - PLAYER_SPEED;
 					enemy.setmLimitF(fx);
 				}
-	
+
 			} else {
 				mMainCharacter.move(PLAYER_SPEED, JUMP_FACTOR);
 				mJumpDuration++;
@@ -370,15 +382,14 @@ public class Game extends GameState {
 				for (Entity powerup : mItems) {
 					powerup.move(PLAYER_SPEED, 0);
 				}
-				for (Enemy enemy: mEnemies) {
+				for (Enemy enemy : mEnemies) {
 					double x = enemy.getX() + PLAYER_SPEED;
 					enemy.setX(x);
 					double bx = enemy.getmLimitB() + PLAYER_SPEED;
-					enemy.setmLimitB(bx); 
+					enemy.setmLimitB(bx);
 					double fx = enemy.getmLimitF() + PLAYER_SPEED;
 					enemy.setmLimitF(fx);
 				}
-	
 
 			} else {
 				mMainCharacter.move(-PLAYER_SPEED, JUMP_FACTOR);
@@ -408,11 +419,11 @@ public class Game extends GameState {
 				for (Entity powerup : mItems) {
 					powerup.move(-PLAYER_SPEED, 0);
 				}
-				for (Enemy enemy: mEnemies) {
+				for (Enemy enemy : mEnemies) {
 					double x = enemy.getX() - PLAYER_SPEED;
 					enemy.setX(x);
 					double bx = enemy.getmLimitB() - PLAYER_SPEED;
-					enemy.setmLimitB(bx); 
+					enemy.setmLimitB(bx);
 					double fx = enemy.getmLimitF() - PLAYER_SPEED;
 					enemy.setmLimitF(fx);
 				}
@@ -441,7 +452,7 @@ public class Game extends GameState {
 				for (Entity powerup : mItems) {
 					powerup.move(PLAYER_SPEED, 0);
 				}
-				for (Enemy enemy: mEnemies) {
+				for (Enemy enemy : mEnemies) {
 					double x = enemy.getX() + PLAYER_SPEED;
 					enemy.setX(x);
 					double bx = enemy.getmLimitB() + PLAYER_SPEED;
@@ -455,12 +466,11 @@ public class Game extends GameState {
 		}
 
 		mMainCharacter.update();
-		
-		for (Enemy enemy: mEnemies){
+
+		for (Enemy enemy : mEnemies) {
 			enemy.move();
 			enemy.update();
 		}
-			
 
 		for (Entity powerup : mItems) {
 			powerup.update();
