@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
+
 import rafgfxlib.GameHost;
 import rafgfxlib.GameHost.GFMouseButton;
 import rafgfxlib.GameState;
@@ -44,12 +46,14 @@ public class Game extends GameState {
 
 	private ArrayList<Obstacle> mObastcles;
 	private ArrayList<Entity> mItems;
+	private ArrayList<Enemy> mEnemies;
 
 	public Game(GameHost host) {
 		super(host);
 		generateMainCharacter();
 		generateItems();
 		generateObstacles();
+		generateEnemies();
 
 		mBackground = new Background();
 		mPressedKeys = new HashSet<Integer>();
@@ -208,6 +212,53 @@ public class Game extends GameState {
 
 		// mItems.add(mCoin);
 	}
+	
+	public void generateEnemies() {
+		mEnemies = new ArrayList<>();
+		String[] temp;
+		BufferedReader reader;
+		String line = null;
+		BufferedImage img = null;
+
+		try {
+			reader = new BufferedReader(new FileReader("./enemy_positions.txt"));
+			while ((line = reader.readLine()) != null) {
+				temp = line.split("-");
+				int x = Integer.valueOf(temp[0]);
+				int y = Integer.valueOf(temp[1]);
+				int limitF = Integer.valueOf(temp[2]);
+				int limitB = Integer.valueOf(temp[3]);
+				//img = choseEnemy();
+				SpriteSheet enemySheet = new SpriteSheet("enemy.png", 4, 3);
+				Enemy enemy = new Enemy(enemySheet, x, y-enemySheet.getFrameHeight(), limitF-enemySheet.getFrameWidth(), limitB);
+				enemy.play();
+				mEnemies.add(enemy);
+				mItems.add(enemy);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private BufferedImage choseEnemy() {
+		Random rnd = new Random();
+		BufferedImage temp = null;
+		switch (rnd.nextInt(3)) {
+		case 0:
+			temp = Util.loadImage("enemy.png");
+			break;
+		case 1:
+			temp = Util.loadImage("");
+			break;
+		case 2:
+			temp = Util.loadImage("");
+			break;
+		default:
+			break;
+		}
+		return temp;
+	}
 
 	@Override
 	public void render(Graphics2D g, int sw, int sh) {
@@ -228,6 +279,9 @@ public class Game extends GameState {
 		}
 
 		mMainCharacter.draw(g);
+		for (Enemy enemy: mEnemies) {
+			enemy.draw(g);
+		}
 
 		for (Entity powerup : mItems) {
 			powerup.draw(g);
@@ -252,6 +306,9 @@ public class Game extends GameState {
 					mMainCharacter.setSpriteSheet(mAltSheet);
 					temp = item;
 					break;
+				}
+				if (item instanceof Enemy) {
+					System.out.println("Mrtav, ako nije powerUpovan!");
 				}
 			}
 		}
@@ -285,6 +342,15 @@ public class Game extends GameState {
 				for (Entity powerup : mItems) {
 					powerup.move(-PLAYER_SPEED, 0);
 				}
+				for (Enemy enemy: mEnemies) {
+					double x = enemy.getX() - PLAYER_SPEED;
+					enemy.setX(x);
+					double bx = enemy.getmLimitB() - PLAYER_SPEED;
+					enemy.setmLimitB(bx); 
+					double fx = enemy.getmLimitF() - PLAYER_SPEED;
+					enemy.setmLimitF(fx);
+				}
+	
 			} else {
 				mMainCharacter.move(PLAYER_SPEED, JUMP_FACTOR);
 				mJumpDuration++;
@@ -304,6 +370,15 @@ public class Game extends GameState {
 				for (Entity powerup : mItems) {
 					powerup.move(PLAYER_SPEED, 0);
 				}
+				for (Enemy enemy: mEnemies) {
+					double x = enemy.getX() + PLAYER_SPEED;
+					enemy.setX(x);
+					double bx = enemy.getmLimitB() + PLAYER_SPEED;
+					enemy.setmLimitB(bx); 
+					double fx = enemy.getmLimitF() + PLAYER_SPEED;
+					enemy.setmLimitF(fx);
+				}
+	
 
 			} else {
 				mMainCharacter.move(-PLAYER_SPEED, JUMP_FACTOR);
@@ -333,6 +408,14 @@ public class Game extends GameState {
 				for (Entity powerup : mItems) {
 					powerup.move(-PLAYER_SPEED, 0);
 				}
+				for (Enemy enemy: mEnemies) {
+					double x = enemy.getX() - PLAYER_SPEED;
+					enemy.setX(x);
+					double bx = enemy.getmLimitB() - PLAYER_SPEED;
+					enemy.setmLimitB(bx); 
+					double fx = enemy.getmLimitF() - PLAYER_SPEED;
+					enemy.setmLimitF(fx);
+				}
 			}
 			mBackground.update(1, mMiddle);
 
@@ -358,12 +441,26 @@ public class Game extends GameState {
 				for (Entity powerup : mItems) {
 					powerup.move(PLAYER_SPEED, 0);
 				}
+				for (Enemy enemy: mEnemies) {
+					double x = enemy.getX() + PLAYER_SPEED;
+					enemy.setX(x);
+					double bx = enemy.getmLimitB() + PLAYER_SPEED;
+					enemy.setmLimitB(bx);
+					double fx = enemy.getmLimitF() + PLAYER_SPEED;
+					enemy.setmLimitF(fx);
+				}
 			}
 
 			mBackground.update(0, mBack);
 		}
 
 		mMainCharacter.update();
+		
+		for (Enemy enemy: mEnemies){
+			enemy.move();
+			enemy.update();
+		}
+			
 
 		for (Entity powerup : mItems) {
 			powerup.update();
