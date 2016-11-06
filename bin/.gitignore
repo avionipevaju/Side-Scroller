@@ -1,6 +1,8 @@
 /Background.class
 /Coin.class
 /Const.class
+/Dialog$1.class
+/Dialog.class
 /Enemy.class
 /Entity.class
 /Game.class
@@ -11,10 +13,8 @@
 /Obstacle.class
 /Options.class
 /Powerup.class
+/PowerupStyle.class
 /SplashScreen.class
 /Sprite.class
 /SpriteSheet.class
 /Strings.class
-/PowerupStyle.class
-/Dialog.class
-/Dialog$1.class

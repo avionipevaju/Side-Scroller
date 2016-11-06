@@ -11,11 +11,11 @@ public class Sprite extends Entity {
 	private boolean animPlaying = false;
 	private int frameInterval = 4;
 	private int frameCountdown = 0;
-	
-	private boolean isPoweredUp=false;
 
-	// private boolean isJumping=false;
-	// private int jumpCount=0;
+	private boolean isPoweredUp = false;
+
+	private boolean isJumping = false;
+	private int jumpCount = 0;
 
 	public Sprite(SpriteSheet spriteSheet, int x, int y) {
 
@@ -127,11 +127,10 @@ public class Sprite extends Entity {
 				(float) (mX + mSpriteSheet.getFrameWidth() - 20), (float) (mY + mSpriteSheet.getFrameHeight()));
 	}
 
-	public void setSpriteSheet(SpriteSheet sheet){
-		mSpriteSheet=sheet;
-		
-	}
+	public void setSpriteSheet(SpriteSheet sheet) {
+		mSpriteSheet = sheet;
 
+	}
 
 	public boolean isPoweredUp() {
 		return isPoweredUp;
@@ -140,6 +139,24 @@ public class Sprite extends Entity {
 	public void setPoweredUp(boolean isPoweredUp) {
 		this.isPoweredUp = isPoweredUp;
 	}
+
+
+	public boolean isJumping() {
+		return isJumping;
+	}
+
+	public void setJumping(boolean isJumping) {
+		this.isJumping = isJumping;
+	}
+
+	public int getJumpCount() {
+		return jumpCount;
+	}
+
+	public void setJumpCount(int jumpCount) {
+		this.jumpCount = jumpCount;
+	}
 	
 	
+
 }
