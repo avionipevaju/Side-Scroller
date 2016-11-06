@@ -18,6 +18,7 @@ public class Main {
 		new Menu(host);
 		new Game(host);
 		new Leaderboard(host);
+		new Options(host);
 		
 		host.setState(Strings.SPLASH);
 

@@ -12,7 +12,7 @@ import rafgfxlib.Util;
 
 public class Menu extends GameState {
 	
-	private Rectangle mPlay, mLeaderboard, mExit, mMouse;
+	private Rectangle mPlay, mLeaderboard, mOptions, mExit, mMouse;
 	private BufferedImage mLogo, mBackground, mUfo;
 	private BufferedImage mMortyR, mMortyL, mMorty;
 	private BufferedImage mRickR, mRickL, mRick;
@@ -41,7 +41,8 @@ public class Menu extends GameState {
 		mUfo = Util.loadImage("ufo.png");
 		mPlay = new Rectangle(centerX, centerY, Const.MENU_BUTTON_WIDTH, Const.MENU_BUTTON_HEIGHT);
 		mLeaderboard = new Rectangle(centerX, centerY + 60, Const.MENU_BUTTON_WIDTH, Const.MENU_BUTTON_HEIGHT);
-		mExit = new Rectangle(centerX, centerY + 120, Const.MENU_BUTTON_WIDTH, Const.MENU_BUTTON_HEIGHT);
+		mOptions = new Rectangle(centerX, centerY + 120, Const.MENU_BUTTON_WIDTH, Const.MENU_BUTTON_HEIGHT);
+		mExit = new Rectangle(centerX, centerY + 180, Const.MENU_BUTTON_WIDTH, Const.MENU_BUTTON_HEIGHT);
 	}
 
 	@Override
@@ -85,6 +86,7 @@ public class Menu extends GameState {
 		g.drawImage(mUfo, mUfoX, mUfoY, null);
 		drawButton(g, mPlay, Strings.PLAY, 110);
 		drawButton(g, mLeaderboard, Strings.LEADERBOARD, 60);
+		drawButton(g, mOptions, Strings.OPTIONS, 80);
 		drawButton(g, mExit, Strings.EXIT, 110);
 		
 	}
@@ -131,6 +133,7 @@ public class Menu extends GameState {
 		if (button == GFMouseButton.Left) {
 			if (mMouse.intersects(mPlay)) host.setState(Strings.PLAY);
 			if (mMouse.intersects(mLeaderboard)) host.setState(Strings.LEADERBOARD);
+			if (mMouse.intersects(mOptions)) host.setState(Strings.OPTIONS);
 			if (mMouse.intersects(mExit)) host.exit();
 			
 		}
