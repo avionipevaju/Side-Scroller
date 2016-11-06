@@ -16,6 +16,9 @@ public class Strings {
 	public static final String LEFT_ARROW = "Left arrow - Player moves to the left";
 	public static final String RIGHT_ARROW = "Rigth arrow - Player moves to the right";
 	public static final String SPACE = "Space - Player jumps";
-
+	
+	public static final String DIALOG = "End of game";
+	public static final String NAME = "Enter your name:";
+	public static final String SCORE = "Your score:";
 
 }

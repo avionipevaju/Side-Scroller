@@ -6,8 +6,10 @@ import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -33,12 +35,13 @@ public class Leaderboard extends GameState {
 		String line = null;
 		
 		try {
-			reader = new BufferedReader(new FileReader("./leaderboard.txt"));
+			reader = new BufferedReader(new FileReader("./list.txt"));
 			line = reader.readLine();
 			while (line != null) {
 				mList.add(line);
 				line = reader.readLine();
 			}
+			reader.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -130,6 +133,29 @@ public class Leaderboard extends GameState {
 	public void handleKeyUp(int keyCode) {
 		if (keyCode == KeyEvent.VK_ESCAPE) host.setState(Strings.MENU);
 		
+	}
+	
+	public void checkList(int score, String name) {
+		for(int i = 0; i < mList.size(); i++) {
+			String[] temp = mList.get(i).split("-");
+			if (score <= Integer.valueOf(temp[1].trim())) continue ;
+			String newscore = name + "-" + score +"\n";
+			mList.add(i, newscore);
+			mList.remove(mList.size()-1);
+			BufferedWriter writer;
+			
+			try {
+				writer = new BufferedWriter(new FileWriter("./list.txt"));
+				for (String line: mList) {
+					writer.write(line);
+				}
+				writer.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			break;
+		}
 	}
 
 }

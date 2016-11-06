@@ -42,7 +42,7 @@ public class Game extends GameState {
 	private SpriteSheet mSpriteSheet, mAltSheet, mCoinSheet, mHealthSheet, mHurtSheet,mBuffSheet;;
 	private Sprite mMainCharacter;
 	private Background mBackground;
-	private boolean mMiddle = false, mBack = false;
+	private boolean mMiddle = false, mBack = false, mSuspend = false;
 	private BufferedImage mHealthMeter;
 
 	private ArrayList<Obstacle> mObastcles;
@@ -74,13 +74,13 @@ public class Game extends GameState {
 
 	@Override
 	public void resumeState() {
-		// TODO Auto-generated method stub
+		mSuspend = false;
 
 	}
 
 	@Override
 	public void suspendState() {
-		// TODO Auto-generated method stub
+		mSuspend = true;
 
 	}
 
@@ -157,6 +157,7 @@ public class Game extends GameState {
 				mItems.add(temp);
 
 			}
+			reader.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -177,6 +178,7 @@ public class Game extends GameState {
 				temp1.play();
 				mItems.add(temp1);
 			}
+			reader.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -196,6 +198,7 @@ public class Game extends GameState {
 				temp1.play();
 				mItems.add(temp1);
 			}
+			reader.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -226,6 +229,7 @@ public class Game extends GameState {
 				mEnemies.add(enemy);
 				mItems.add(enemy);
 			}
+			reader.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -284,6 +288,7 @@ public class Game extends GameState {
 
 	@Override
 	public void update() {
+		if (mSuspend) return ;
 
 		Entity temp = null;
 
@@ -309,6 +314,7 @@ public class Game extends GameState {
 			mHealthMeter = Util.loadImage("health_meter.png");
 			System.out.println("died");
 			mMainCharacter.setSpriteSheet(mHurtSheet);
+			gameEnd();
 			break;
 		}
 		}
@@ -574,6 +580,26 @@ public class Game extends GameState {
 			}
 		}
 			
+	public void gameEnd() {
+		this.suspendState();
+		new Dialog(host, mCoinCount);
+		this.resumeState();
+		resetGame();
+		host.setState(Strings.MENU);
+	}
+	
+	private void resetGame() {
+		mItems.clear();
+		mObastcles.clear();
+		mEnemies.clear();
+		
+		generateMainCharacter();
+		generateItems();
+		generateObstacles();
+		generateEnemies();
+		
+	}
+	
 	
 
 }
